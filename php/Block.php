@@ -63,28 +63,22 @@ class Block {
 	 */
 	public function render_callback( $attributes, $content, $block ) {
 		$post_types = get_post_types( [ 'public' => true ] );
-		$class_name = $attributes['className'];
+		$class_name = isset($attributes['className']) ? $attributes['className'] :  "";
 		ob_start();
 
 		?>
-		<div class="<?php echo $class_name; ?>">
-			<h2>Post Counts</h2>
+		<div<?php echo ("" != $class_name) ? " class=\"$class_name\"" : ""; ?>">
+			<h2><?php _e("Post Counts", "site-counts") ?></h2>
 			<?php
 			foreach ( $post_types as $post_type_slug ) :
 				$post_type_object = get_post_type_object( $post_type_slug );
-				$post_count = count(
-					get_posts(
-						[
-							'post_type' => $post_type_slug,
-							'posts_per_page' => -1,
-						]
-					)
-				);
-
+				$post_count = wp_count_posts($post_type_slug);
 				?>
-				<p><?php echo 'There are ' . $post_count . ' ' . $post_type_object->labels->name . '.'; ?></p>
+				<p>
+					<?php printf( __('There are %s %s.', "site-counts"), $post_count, $post_type_object->labels->name); ?>
+				</p>
 			<?php endforeach; ?>
-			<p><?php echo 'The current post ID is ' . $_GET['post_id'] . '.'; ?></p>
+			<p><?php printf(__('The current post ID is %s.', "site-counts"), $block->context['postId']); ?></p>
 		</div>
 		<?php
 
