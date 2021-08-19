@@ -57,28 +57,31 @@ class Block {
 	 * Renders the block.
 	 *
 	 * @param array    $attributes The attributes for the block.
-	 * @param string   $content    The block content, if any.
-	 * @param WP_Block $block      The instance of this block.
+	 * @param string   $content The block content, if any.
+	 * @param WP_Block $block The instance of this block.
+	 *
 	 * @return string The markup of the block.
 	 */
 	public function render_callback( $attributes, $content, $block ) {
 		$post_types = get_post_types( [ 'public' => true ] );
-		$class_name = isset($attributes['className']) ? $attributes['className'] :  "";
+		$class_name = isset( $attributes['className'] ) ? $attributes['className'] : '';
 		ob_start();
 
 		?>
-		<div<?php echo ("" != $class_name) ? " class=\"$class_name\"" : ""; ?>">
-			<h2><?php _e("Post Counts", "site-counts") ?></h2>
-			<?php
-			foreach ( $post_types as $post_type_slug ) :
-				$post_type_object = get_post_type_object( $post_type_slug );
-				$post_count = wp_count_posts($post_type_slug);
-				?>
-				<p>
-					<?php printf( __('There are %s %s.', "site-counts"), $post_count, $post_type_object->labels->name); ?>
-				</p>
-			<?php endforeach; ?>
-			<p><?php printf(__('The current post ID is %s.', "site-counts"), $block->context['postId']); ?></p>
+		<div<?php echo ( '' !== $class_name ) ? " class=\"$class_name\"" : ''; ?>>
+		<h2><?php _e( 'Post Counts', 'site-counts' ); ?></h2>
+		<?php
+		foreach ( $post_types as $post_type_slug ) :
+			$post_type_object = get_post_type_object( $post_type_slug );
+			$post_count       = wp_count_posts( $post_type_slug );
+			?>
+			<p>
+				<?php /* translators: number of posts per post type */ ?>
+				<?php printf( __( 'There are %1$s %2$1s.', 'site-counts' ), $post_count->publish, $post_type_object->labels->name ); ?>
+			</p>
+		<?php endforeach; ?>
+		<?php /* translators: an id for the current post */ ?>
+		<p><?php printf( __( 'The current post ID is %s.', 'site-counts' ), $block->context['postId'] ); ?></p>
 		</div>
 		<?php
 
